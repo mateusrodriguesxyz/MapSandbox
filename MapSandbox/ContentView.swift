@@ -20,9 +20,15 @@ struct Place: Identifiable {
         return distance
     }
     
-    
-    
 }
+
+extension Place: Equatable {
+    static func == (lhs: Place, rhs: Place) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
+extension Place: Clusterable { }
 
 struct ContentView: View {
     
@@ -61,32 +67,36 @@ struct ContentView: View {
                 ToolbarItem(placement: .principal) {
                     Button("Group") {
                         
-                        let threshold = 50.0
+//                        let threshold = 50.0
+//                        
+//                        var places = self.places
+//                        
+//                        var clusters: [[Place]] = []
+//                        
+//                        while !places.isEmpty {
+//                            
+//                            let p = places.removeFirst()
+//                            
+//                            var cluster = [p]
+//                            
+//                            for place in places {
+//                                if place.distance(to: p) < threshold {
+//                                    cluster.append(place)
+//                                    if let index = places.firstIndex(where: { $0.id == place.id }) {
+//                                        places.remove(at: index)
+//                                    }
+//                                }
+//                            }
+//                            
+//                            clusters.append(cluster)
+//                            
+//                        }
                         
-                        var places = self.places
+                        let clusters = places.clusterize(distance: 50)
                         
-                        var clusters: [[Place]] = []
-                        
-                        while !places.isEmpty {
-                            
-                            let p = places.removeFirst()
-                            
-                            var cluster = [p]
-                            
-                            for place in places {
-                                if place.distance(to: p) < threshold {
-                                    cluster.append(place)
-                                    if let index = places.firstIndex(where: { $0.id == place.id }) {
-                                        places.remove(at: index)
-                                    }
-                                }
-                            }
-                            
-                            clusters.append(cluster)
-                            
+                        for cluster in clusters {
+                            print(cluster.map({ "\($0.id)" }).joined(separator: " "))
                         }
-                        
-                        print(clusters.count)
                         
                     }
                 }
