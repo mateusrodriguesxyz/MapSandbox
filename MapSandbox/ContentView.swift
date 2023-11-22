@@ -7,6 +7,8 @@
 
 import SwiftUI
 import MapKit
+import CoreLocation
+
 
 struct Place: Identifiable {
     
@@ -28,81 +30,147 @@ extension Place: Equatable {
     }
 }
 
-extension Place: Clusterable { }
+extension Place: MapLocationClusterable { }
+
+final class ObservableLocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    
+    private let locationManager = CLLocationManager()
+    
+    static let defaultDistance: CLLocationDistance = 1000000
+    
+    @Published var region = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 42.0422448, longitude: -102.0079053),
+        latitudinalMeters: ObservableLocationManager.defaultDistance,
+        longitudinalMeters: ObservableLocationManager.defaultDistance
+    )
+    
+    override init() {
+        super.init()
+        
+        locationManager.delegate = self
+    }
+    
+    func updateLocation() {
+        locationManager.requestWhenInUseAuthorization()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.first else { return }
+        
+        DispatchQueue.main.async {
+            self.region = MKCoordinateRegion(
+                center: location.coordinate,
+                latitudinalMeters: Self.defaultDistance,
+                longitudinalMeters: Self.defaultDistance
+            )
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error.localizedDescription)
+    }
+}
+
 
 struct ContentView: View {
     
+    @StateObject var locationManager = ObservableLocationManager()
+    
     @State var places: [Place] = []
     
+    @State var clusters: [MapLocationCluster<Place>] = []
+    
+    @State var mapCameraDistance: Double = 0
+    
+    @State private var coordinateRegion = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 51.507222, longitude: -0.1275), span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5))
+            
     var body: some View {
-        NavigationStack {
-            MapReader { reader in
-                Map {
-                    ForEach(places) { place in
-                        Marker(place.id.formatted(), coordinate: place.location)
-                    }
+        TabView {
+            
+            GeometryReader { proxy in
+                Map(coordinateRegion: $coordinateRegion, annotationItems: places) { place in
+                    MapMarker(coordinate: place.location)
                 }
-                .onMapCameraChange{ context in
-//                    print(context.region.span)
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onEnded { gesture in
+                            
+                            let location = convertTap(
+                                at: gesture.location,
+                                for: proxy.size)
+                            
+                            places.append(.init(id: places.count, location: location))
+                        }
+                    
+                )
+                .highPriorityGesture(DragGesture(minimumDistance: .greatestFiniteMagnitude))
+            }
+            .ignoresSafeArea(.container, edges: .top)
+            .tabItem { Text("iOS 16") }
+            
+            MapReader { reader in
+                Map(initialPosition: .userLocation(fallback: .automatic)) {
+                    
+                    if !clusters.isEmpty {
+                        ForEach(clusters) { cluster in
+                            
+                            let center = cluster.center
+                            
+                            if cluster.values.count == 1 {
+                                Marker("", coordinate: center)
+                            } else {
+                                Marker("", monogram: Text("\(cluster.values.count)"), coordinate: center)
+                            }
+                            
+                        }
+                    } else {
+                        ForEach(places) { place in
+                            Marker("", coordinate: place.location)
+                        }
+                    }
+                    
+                }
+                .onMapCameraChange { context in
+                    
+                    let newMapCameraDistance = context.camera.distance
+                    
+                    print("newMapCameraDistance", Measurement(value: newMapCameraDistance, unit: UnitLength.meters).formatted())
+                    
+                    if newMapCameraDistance != mapCameraDistance {
+                        mapCameraDistance = newMapCameraDistance
+                        clusters = places.clusterize(distance: mapCameraDistance/50)
+                    }
+                    
                 }
                 .onTapGesture {
                     if let location = reader.convert($0, from: .local) {
                         places.append(.init(id: places.count, location: location))
                     }
                 }
-                .onChange(of: places.count) {
-                    guard places.count > 1 else { return }
-                    for place in places {
-                        let reference = places[0]
-                        let p1 = CLLocation(latitude: reference.location.latitude, longitude: reference.location.longitude)
-                        let p2 = CLLocation(latitude: place.location.latitude, longitude: place.location.longitude)
-                        let distance = Measurement(value: p2.distance(from: p1), unit: UnitLength.meters)
-                        print(distance.formatted())
-                        
-                    }
-                }
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Button("Group") {
-                        
-//                        let threshold = 50.0
-//                        
-//                        var places = self.places
-//                        
-//                        var clusters: [[Place]] = []
-//                        
-//                        while !places.isEmpty {
-//                            
-//                            let p = places.removeFirst()
-//                            
-//                            var cluster = [p]
-//                            
-//                            for place in places {
-//                                if place.distance(to: p) < threshold {
-//                                    cluster.append(place)
-//                                    if let index = places.firstIndex(where: { $0.id == place.id }) {
-//                                        places.remove(at: index)
-//                                    }
-//                                }
-//                            }
-//                            
-//                            clusters.append(cluster)
-//                            
-//                        }
-                        
-                        let clusters = places.clusterize(distance: 50)
-                        
-                        for cluster in clusters {
-                            print(cluster.map({ "\($0.id)" }).joined(separator: " "))
-                        }
-                        
-                    }
-                }
-            }
+            .tabItem { Text("iOS 17").background(.red) }
+            
         }
     }
+    
+    func convertTap(at point: CGPoint, for mapSize: CGSize) -> CLLocationCoordinate2D {
+            
+            let lat = coordinateRegion.center.latitude
+            let lon = coordinateRegion.center.longitude
+            
+            let mapCenter = CGPoint(x: mapSize.width/2, y: mapSize.height/2)
+            
+            // X
+            let xValue = (point.x - mapCenter.x) / mapCenter.x
+            let xSpan = xValue * coordinateRegion.span.longitudeDelta/2
+            
+            // Y
+            let yValue = (point.y - mapCenter.y) / mapCenter.y
+            let ySpan = yValue * coordinateRegion.span.latitudeDelta/2
+            
+            return CLLocationCoordinate2D(latitude: lat - ySpan, longitude: lon + xSpan)
+    }
+    
 }
 
 #Preview {
