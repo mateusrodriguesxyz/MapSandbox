@@ -94,11 +94,9 @@ struct ContentView: View {
                 .gesture(
                     DragGesture(minimumDistance: 0)
                         .onEnded { gesture in
-                            
                             let location = convertTap(
                                 at: gesture.location,
                                 for: proxy.size)
-                            
                             places.append(.init(id: places.count, location: location))
                         }
                     
@@ -108,47 +106,57 @@ struct ContentView: View {
             .ignoresSafeArea(.container, edges: .top)
             .tabItem { Text("iOS 16") }
             
-            MapReader { reader in
-                Map(initialPosition: .userLocation(fallback: .automatic)) {
-                    
-                    if !clusters.isEmpty {
-                        ForEach(clusters) { cluster in
-                            
-                            let center = cluster.center
-                            
-                            if cluster.values.count == 1 {
-                                Marker("", coordinate: center)
-                            } else {
-                                Marker("", monogram: Text("\(cluster.values.count)"), coordinate: center)
+            if #available(iOS 17, *) {
+                MapReader { reader in
+                    Map(initialPosition: .userLocation(fallback: .automatic)) {
+                        
+                        if !clusters.isEmpty {
+                            ForEach(clusters) { cluster in
+                                
+                                let center = cluster.center
+                                
+                                if cluster.values.count == 1 {
+                                    Marker("", coordinate: center)
+                                } else {
+                                    Marker("", monogram: Text("\(cluster.values.count)"), coordinate: center)
+                                }
+                                
                             }
-                            
+                        } else {
+                            ForEach(places) { place in
+                                Marker("", coordinate: place.location)
+                            }
                         }
-                    } else {
-                        ForEach(places) { place in
-                            Marker("", coordinate: place.location)
+                        
+                    }
+                    .onMapCameraChange { context in
+                
+                        let newMapCameraDistance = context.camera.distance
+                        
+                        
+                        if newMapCameraDistance != mapCameraDistance {
+                            mapCameraDistance = newMapCameraDistance
+                            clusters = places.clusterize(distance: mapCameraDistance/50)
+                        }
+                        
+                        let loc1 = CLLocation(latitude: context.region.center.latitude - context.region.span.latitudeDelta, longitude: context.region.center.longitude)
+                        let loc2 = CLLocation(latitude: context.region.center.latitude + context.region.span.latitudeDelta, longitude: context.region.center.longitude)
+                        
+                        print("span distance:", Measurement(value: loc1.distance(from: loc2), unit: UnitLength.meters).formatted())
+                        
+                        print("camera distance", Measurement(value: newMapCameraDistance, unit: UnitLength.meters).formatted())
+
+                        
+                    }
+                    .onTapGesture {
+                        if let location = reader.convert($0, from: .local) {
+                            places.append(.init(id: places.count, location: location))
                         }
                     }
-                    
                 }
-                .onMapCameraChange { context in
-                    
-                    let newMapCameraDistance = context.camera.distance
-                    
-                    print("newMapCameraDistance", Measurement(value: newMapCameraDistance, unit: UnitLength.meters).formatted())
-                    
-                    if newMapCameraDistance != mapCameraDistance {
-                        mapCameraDistance = newMapCameraDistance
-                        clusters = places.clusterize(distance: mapCameraDistance/50)
-                    }
-                    
-                }
-                .onTapGesture {
-                    if let location = reader.convert($0, from: .local) {
-                        places.append(.init(id: places.count, location: location))
-                    }
-                }
+                .tabItem { Text("iOS 17").background(.red) }
             }
-            .tabItem { Text("iOS 17").background(.red) }
+            
             
         }
     }
