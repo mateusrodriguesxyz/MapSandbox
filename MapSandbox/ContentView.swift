@@ -81,6 +81,9 @@ struct ContentView: View {
     @State var clusters: [MapLocationCluster<Place>] = []
     
     @State var mapCameraDistance: Double = 0
+    @State var mapSpanDistance: Double = 0
+    
+    @State var mapZoomLevel: Double = 0
     
     @State private var coordinateRegion = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 51.507222, longitude: -0.1275), span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5))
             
@@ -101,7 +104,31 @@ struct ContentView: View {
                         }
                     
                 )
-                .highPriorityGesture(DragGesture(minimumDistance: .greatestFiniteMagnitude))
+                .highPriorityGesture(DragGesture(minimumDistance: .greatestFiniteMagnitude).onEnded({ _ in print("onEnded")}))
+                .onChange(of: coordinateRegion.span.latitudeDelta) { newValue in
+                    
+                    let minSpan = CLLocation(latitude: coordinateRegion.center.latitude - newValue, longitude: coordinateRegion.center.longitude)
+                    let maxSpan = CLLocation(latitude: coordinateRegion.center.latitude + newValue, longitude: coordinateRegion.center.longitude)
+                    
+                    let newMapSpanDistance = minSpan.distance(from: maxSpan).rounded(.towardZero)
+                    
+                    print("span distance:", newMapSpanDistance)
+
+                    let newMapZoomLevel = getZoomLevel(region: coordinateRegion, mapWidth: proxy.size.width)
+                    
+                    if newMapZoomLevel != mapZoomLevel {
+                        mapZoomLevel = newMapZoomLevel
+                        print("zoom updated", mapZoomLevel)
+//                        print("should update clusters...")
+                    }
+                    
+                    if newMapSpanDistance != mapSpanDistance {
+                        mapSpanDistance = newMapSpanDistance
+                    }
+                    
+//                    print("span distance:", Measurement(value: newMapSpanDistance, unit: UnitLength.meters).formatted())
+                    
+                }
             }
             .ignoresSafeArea(.container, edges: .top)
             .tabItem { Text("iOS 16") }
@@ -130,19 +157,27 @@ struct ContentView: View {
                         
                     }
                     .onMapCameraChange { context in
+                        
+                        print("onMapCameraChange")
                 
                         let newMapCameraDistance = context.camera.distance
                         
+//                        if newMapCameraDistance != mapCameraDistance {
+//                            mapCameraDistance = newMapCameraDistance
+//                            clusters = places.clusterize(distance: mapCameraDistance/50)
+//                        }
                         
-                        if newMapCameraDistance != mapCameraDistance {
-                            mapCameraDistance = newMapCameraDistance
-                            clusters = places.clusterize(distance: mapCameraDistance/50)
+                        let minSpan = CLLocation(latitude: context.region.center.latitude - context.region.span.latitudeDelta, longitude: context.region.center.longitude)
+                        let maxSpan = CLLocation(latitude: context.region.center.latitude + context.region.span.latitudeDelta, longitude: context.region.center.longitude)
+                        
+                        let newMapSpanDistance = minSpan.distance(from: maxSpan)
+                        
+                        if newMapSpanDistance != mapSpanDistance {
+                            mapSpanDistance = newMapSpanDistance
+                            clusters = places.clusterize(distance: mapSpanDistance/50)
                         }
                         
-                        let loc1 = CLLocation(latitude: context.region.center.latitude - context.region.span.latitudeDelta, longitude: context.region.center.longitude)
-                        let loc2 = CLLocation(latitude: context.region.center.latitude + context.region.span.latitudeDelta, longitude: context.region.center.longitude)
-                        
-                        print("span distance:", Measurement(value: loc1.distance(from: loc2), unit: UnitLength.meters).formatted())
+                        print("span distance:", Measurement(value: newMapSpanDistance, unit: UnitLength.meters).formatted())
                         
                         print("camera distance", Measurement(value: newMapCameraDistance, unit: UnitLength.meters).formatted())
 
@@ -178,6 +213,13 @@ struct ContentView: View {
             
             return CLLocationCoordinate2D(latitude: lat - ySpan, longitude: lon + xSpan)
     }
+    
+    
+    func getZoomLevel(region: MKCoordinateRegion, mapWidth: Double) -> Double {
+            let MERCATOR_RADIUS = 85445659.44705395
+            let level = 20.00 - log2(region.span.longitudeDelta * MERCATOR_RADIUS * Double.pi / (180.0 * mapWidth))
+            return round(level * 100000)/100000
+        }
     
 }
 
