@@ -71,155 +71,172 @@ final class ObservableLocationManager: NSObject, ObservableObject, CLLocationMan
     }
 }
 
+struct MKMarkerAnnotationViewRepresentable: UIViewRepresentable {
+    
+    var glyphText: String?
+    
+    func makeUIView(context: Context) -> MKMarkerAnnotationView {
+        let uiView = MKMarkerAnnotationView(annotation: nil, reuseIdentifier: nil)
+        uiView.glyphText = glyphText
+        return uiView
+    }
+    
+    func updateUIView(_ uiView: MKMarkerAnnotationView, context: Context) {
+        uiView.glyphText = glyphText
+        DispatchQueue.main.async {
+            print(uiView.frame)
+            uiView.frame.origin = .init(x: 0, y: -uiView.frame.midY/2)
+        }
+
+    }
+    
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: MKMarkerAnnotationView, context: Context) -> CGSize? {
+        uiView.frame.size
+    }
+        
+}
+
+import Combine
+
+struct OnMapTapGesture: ViewModifier {
+    
+    let region: MKCoordinateRegion
+    
+    let perform: (CLLocationCoordinate2D) -> Void
+    
+    func body(content: Content) -> some View {
+        GeometryReader { proxy in
+            content
+                .simultaneousGesture(
+                    LongPressGesture(minimumDuration: 0.25)
+                        .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .local))
+                        .onEnded { value in
+                            switch value {
+                                case .second(true, let gesture):
+                                    let location = mapLocation(at: gesture?.location ?? .zero, for: proxy.size)
+                                    perform(location)
+                                default:
+                                    break
+                            }
+                            
+                        }
+                )
+                .highPriorityGesture(
+                    DragGesture(minimumDistance: .greatestFiniteMagnitude)
+                )
+        }
+    }
+    
+    private func mapLocation(at point: CGPoint, for mapSize: CGSize) -> CLLocationCoordinate2D {
+        
+        let lat = region.center.latitude
+        let lon = region.center.longitude
+        
+        let mapCenter = CGPoint(x: mapSize.width/2, y: mapSize.height/2)
+        
+        let xValue = (point.x - mapCenter.x) / mapCenter.x
+        let xSpan = xValue * region.span.longitudeDelta/2
+        
+        let yValue = (point.y - mapCenter.y) / mapCenter.y
+        let ySpan = yValue * region.span.latitudeDelta/2
+        
+        return CLLocationCoordinate2D(latitude: lat - ySpan, longitude: lon + xSpan)
+    }
+    
+}
 
 struct ContentView: View {
     
     @StateObject var locationManager = ObservableLocationManager()
     
-    @State var places: [Place] = []
+    @State var places: [Place] = [
+        Place(id: 0, location: CLLocationCoordinate2D(latitude: 51.46835549272785, longitude: -0.03750000000003133)),
+        Place(id: 1, location: CLLocationCoordinate2D(latitude: 51.457013659530155, longitude: -0.14905556233727052)),
+        Place(id: 2, location: CLLocationCoordinate2D(latitude: 51.44401205914533, longitude: -0.005055562337271016)),
+        Place(id: 3, location: CLLocationCoordinate2D(latitude: 51.4276908863969, longitude: -0.10683333333336441)),
+        Place(id: 4, location: CLLocationCoordinate2D(latitude: 51.29601501405658, longitude: -0.22550000000003068)),
+    ]
     
     @State var clusters: [MapLocationCluster<Place>] = []
     
-    @State var mapCameraDistance: Double = 0
     @State var mapSpanDistance: Double = 0
+        
+    @State private var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 51.507222, longitude: -0.1275), span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5))
     
-    @State var mapZoomLevel: Double = 0
+    let mapSpanLatitudeDeltaDidChange = PassthroughSubject<CLLocationDegrees, Never>()
     
-    @State private var coordinateRegion = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 51.507222, longitude: -0.1275), span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5))
-            
     var body: some View {
         TabView {
-            
-            GeometryReader { proxy in
-                Map(coordinateRegion: $coordinateRegion, annotationItems: places) { place in
-                    MapMarker(coordinate: place.location)
+            NavigationStack {
+                Map(coordinateRegion: $region, annotationItems: clusters) { cluster in
+                    MapAnnotation(coordinate: cluster.center) {
+                        Circle()
+                            .fill(.orange)
+                            .frame(width: 30, height: 30)
+                            .overlay {
+                                if cluster.values.count > 1 {
+                                    Text(cluster.values.count.formatted())
+                                        .bold()
+                                }
+                            }
+                            .onTapGesture {
+                                withAnimation {
+                                    region.center = cluster.center
+                                    region.span = .init(latitudeDelta: region.span.latitudeDelta/2, longitudeDelta: region.span.longitudeDelta/2)
+                                }
+                            }
+                    }
                 }
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onEnded { gesture in
-                            let location = convertTap(
-                                at: gesture.location,
-                                for: proxy.size)
-                            places.append(.init(id: places.count, location: location))
-                        }
-                    
+                .modifier(
+                    OnMapTapGesture(region: region) { location in
+                        places.append(.init(id: places.count, location: location))
+                        clusters = places.clusterize(region: region)
+                    }
                 )
-                .highPriorityGesture(DragGesture(minimumDistance: .greatestFiniteMagnitude).onEnded({ _ in print("onEnded")}))
-                .onChange(of: coordinateRegion.span.latitudeDelta) { newValue in
-                    
-                    let minSpan = CLLocation(latitude: coordinateRegion.center.latitude - newValue, longitude: coordinateRegion.center.longitude)
-                    let maxSpan = CLLocation(latitude: coordinateRegion.center.latitude + newValue, longitude: coordinateRegion.center.longitude)
-                    
-                    let newMapSpanDistance = minSpan.distance(from: maxSpan).rounded(.towardZero)
-                    
-                    print("span distance:", newMapSpanDistance)
-
-                    let newMapZoomLevel = getZoomLevel(region: coordinateRegion, mapWidth: proxy.size.width)
-                    
-                    if newMapZoomLevel != mapZoomLevel {
-                        mapZoomLevel = newMapZoomLevel
-                        print("zoom updated", mapZoomLevel)
-//                        print("should update clusters...")
-                    }
-                    
-                    if newMapSpanDistance != mapSpanDistance {
-                        mapSpanDistance = newMapSpanDistance
-                    }
-                    
-//                    print("span distance:", Measurement(value: newMapSpanDistance, unit: UnitLength.meters).formatted())
-                    
-                }
+            }
+            .onChange(of: region.span.latitudeDelta) { _ in
+                mapSpanLatitudeDeltaDidChange.send(region.span.latitudeDelta)
+            }
+            .onReceive(mapSpanLatitudeDeltaDidChange.debounce(for: 0.1, scheduler: RunLoop.main)) { newValue in
+                clusters = places.clusterize(region: region)
+            }
+            .onAppear {
+                clusters = places.clusterize(region: region)
             }
             .ignoresSafeArea(.container, edges: .top)
-            .tabItem { Text("iOS 16") }
+            .tabItem {
+                Text("iOS 16")
+            }
             
             if #available(iOS 17, *) {
                 MapReader { reader in
                     Map(initialPosition: .userLocation(fallback: .automatic)) {
-                        
-                        if !clusters.isEmpty {
-                            ForEach(clusters) { cluster in
-                                
-                                let center = cluster.center
-                                
-                                if cluster.values.count == 1 {
-                                    Marker("", coordinate: center)
-                                } else {
-                                    Marker("", monogram: Text("\(cluster.values.count)"), coordinate: center)
-                                }
-                                
-                            }
-                        } else {
-                            ForEach(places) { place in
-                                Marker("", coordinate: place.location)
+                        ForEach(clusters) { cluster in
+                            if cluster.values.count == 1 {
+                                Marker("", coordinate: cluster.center)
+                            } else {
+                                Marker("", monogram: Text("\(cluster.values.count)"), coordinate: cluster.center)
                             }
                         }
-                        
                     }
                     .onMapCameraChange { context in
-                        
-                        print("onMapCameraChange")
-                
-                        let newMapCameraDistance = context.camera.distance
-                        
-//                        if newMapCameraDistance != mapCameraDistance {
-//                            mapCameraDistance = newMapCameraDistance
-//                            clusters = places.clusterize(distance: mapCameraDistance/50)
-//                        }
-                        
-                        let minSpan = CLLocation(latitude: context.region.center.latitude - context.region.span.latitudeDelta, longitude: context.region.center.longitude)
-                        let maxSpan = CLLocation(latitude: context.region.center.latitude + context.region.span.latitudeDelta, longitude: context.region.center.longitude)
-                        
-                        let newMapSpanDistance = minSpan.distance(from: maxSpan)
-                        
-                        if newMapSpanDistance != mapSpanDistance {
-                            mapSpanDistance = newMapSpanDistance
-                            clusters = places.clusterize(distance: mapSpanDistance/50)
-                        }
-                        
-                        print("span distance:", Measurement(value: newMapSpanDistance, unit: UnitLength.meters).formatted())
-                        
-                        print("camera distance", Measurement(value: newMapCameraDistance, unit: UnitLength.meters).formatted())
-
-                        
+                        clusters = places.clusterize(region: context.region)
                     }
-                    .onTapGesture {
+                    .onTapGesture(count: 2) {
                         if let location = reader.convert($0, from: .local) {
                             places.append(.init(id: places.count, location: location))
+                            clusters = places.clusterize(distance: mapSpanDistance/50)
                         }
                     }
                 }
-                .tabItem { Text("iOS 17").background(.red) }
+                .tabItem {
+                    Text("iOS 17")
+                }
             }
             
             
         }
     }
-    
-    func convertTap(at point: CGPoint, for mapSize: CGSize) -> CLLocationCoordinate2D {
-            
-            let lat = coordinateRegion.center.latitude
-            let lon = coordinateRegion.center.longitude
-            
-            let mapCenter = CGPoint(x: mapSize.width/2, y: mapSize.height/2)
-            
-            // X
-            let xValue = (point.x - mapCenter.x) / mapCenter.x
-            let xSpan = xValue * coordinateRegion.span.longitudeDelta/2
-            
-            // Y
-            let yValue = (point.y - mapCenter.y) / mapCenter.y
-            let ySpan = yValue * coordinateRegion.span.latitudeDelta/2
-            
-            return CLLocationCoordinate2D(latitude: lat - ySpan, longitude: lon + xSpan)
-    }
-    
-    
-    func getZoomLevel(region: MKCoordinateRegion, mapWidth: Double) -> Double {
-            let MERCATOR_RADIUS = 85445659.44705395
-            let level = 20.00 - log2(region.span.longitudeDelta * MERCATOR_RADIUS * Double.pi / (180.0 * mapWidth))
-            return round(level * 100000)/100000
-        }
     
 }
 
