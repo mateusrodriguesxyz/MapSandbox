@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		27CDF1DF2B0E9D64006E57C1 /* Backwards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CDF1DE2B0E9D64006E57C1 /* Backwards.swift */; };
+		DC90FD142B13D6E6008B2412 /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC90FD132B13D6E6008B2412 /* Place.swift */; };
+		DC90FD162B13D736008B2412 /* MKMarkerAnnotationViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC90FD152B13D736008B2412 /* MKMarkerAnnotationViewRepresentable.swift */; };
+		DC90FD182B13D76C008B2412 /* OnMapTapGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC90FD172B13D76C008B2412 /* OnMapTapGesture.swift */; };
+		DC90FD1A2B13D78F008B2412 /* ObservableLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC90FD192B13D78F008B2412 /* ObservableLocationManager.swift */; };
+		DC90FD1C2B13D84D008B2412 /* MapIOS17.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC90FD1B2B13D84D008B2412 /* MapIOS17.swift */; };
 		DCD9621D2B0D758B00DC9761 /* MapSandboxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD9621C2B0D758B00DC9761 /* MapSandboxApp.swift */; };
 		DCD9621F2B0D758B00DC9761 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD9621E2B0D758B00DC9761 /* ContentView.swift */; };
 		DCD962212B0D758E00DC9761 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DCD962202B0D758E00DC9761 /* Assets.xcassets */; };
@@ -18,6 +23,11 @@
 
 /* Begin PBXFileReference section */
 		27CDF1DE2B0E9D64006E57C1 /* Backwards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backwards.swift; sourceTree = "<group>"; };
+		DC90FD132B13D6E6008B2412 /* Place.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Place.swift; sourceTree = "<group>"; };
+		DC90FD152B13D736008B2412 /* MKMarkerAnnotationViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MKMarkerAnnotationViewRepresentable.swift; sourceTree = "<group>"; };
+		DC90FD172B13D76C008B2412 /* OnMapTapGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnMapTapGesture.swift; sourceTree = "<group>"; };
+		DC90FD192B13D78F008B2412 /* ObservableLocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableLocationManager.swift; sourceTree = "<group>"; };
+		DC90FD1B2B13D84D008B2412 /* MapIOS17.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapIOS17.swift; sourceTree = "<group>"; };
 		DCD962192B0D758B00DC9761 /* MapSandbox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapSandbox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCD9621C2B0D758B00DC9761 /* MapSandboxApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSandboxApp.swift; sourceTree = "<group>"; };
 		DCD9621E2B0D758B00DC9761 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -59,6 +69,11 @@
 			children = (
 				DCD9621C2B0D758B00DC9761 /* MapSandboxApp.swift */,
 				DCD9621E2B0D758B00DC9761 /* ContentView.swift */,
+				DC90FD192B13D78F008B2412 /* ObservableLocationManager.swift */,
+				DC90FD172B13D76C008B2412 /* OnMapTapGesture.swift */,
+				DC90FD152B13D736008B2412 /* MKMarkerAnnotationViewRepresentable.swift */,
+				DC90FD132B13D6E6008B2412 /* Place.swift */,
+				DC90FD1B2B13D84D008B2412 /* MapIOS17.swift */,
 				27CDF1DE2B0E9D64006E57C1 /* Backwards.swift */,
 				DCD9622C2B0D91A300DC9761 /* Clusterable.swift */,
 				DCD9622A2B0D8F9C00DC9761 /* File.swift */,
@@ -146,11 +161,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC90FD1C2B13D84D008B2412 /* MapIOS17.swift in Sources */,
 				DCD9621F2B0D758B00DC9761 /* ContentView.swift in Sources */,
+				DC90FD1A2B13D78F008B2412 /* ObservableLocationManager.swift in Sources */,
 				DCD9622B2B0D8F9C00DC9761 /* File.swift in Sources */,
 				DCD9622D2B0D91A300DC9761 /* Clusterable.swift in Sources */,
+				DC90FD142B13D6E6008B2412 /* Place.swift in Sources */,
 				DCD9621D2B0D758B00DC9761 /* MapSandboxApp.swift in Sources */,
 				27CDF1DF2B0E9D64006E57C1 /* Backwards.swift in Sources */,
+				DC90FD162B13D736008B2412 /* MKMarkerAnnotationViewRepresentable.swift in Sources */,
+				DC90FD182B13D76C008B2412 /* OnMapTapGesture.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
