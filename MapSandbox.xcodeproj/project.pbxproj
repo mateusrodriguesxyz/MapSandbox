@@ -3,38 +3,38 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		27CDF1DF2B0E9D64006E57C1 /* Backwards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CDF1DE2B0E9D64006E57C1 /* Backwards.swift */; };
+		27374DA22B20AA1200554FBF /* MapViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27374DA12B20AA1200554FBF /* MapViewRepresentable.swift */; };
+		27573E522B14DD5C00E34F47 /* MapClusterizer in Frameworks */ = {isa = PBXBuildFile; productRef = 27573E512B14DD5C00E34F47 /* MapClusterizer */; };
+		27573E552B14E1B900E34F47 /* MapClusterizer in Frameworks */ = {isa = PBXBuildFile; productRef = 27573E542B14E1B900E34F47 /* MapClusterizer */; };
+		27573E632B15282100E34F47 /* MapClusterizer in Frameworks */ = {isa = PBXBuildFile; productRef = 27573E622B15282100E34F47 /* MapClusterizer */; };
+		27573E662B160D5F00E34F47 /* MapClusterizer in Frameworks */ = {isa = PBXBuildFile; productRef = 27573E652B160D5F00E34F47 /* MapClusterizer */; };
+		27F2D2372B24AED100C8AFB5 /* swift-format in Frameworks */ = {isa = PBXBuildFile; productRef = 27F2D2362B24AED100C8AFB5 /* swift-format */; };
 		DC90FD142B13D6E6008B2412 /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC90FD132B13D6E6008B2412 /* Place.swift */; };
 		DC90FD162B13D736008B2412 /* MKMarkerAnnotationViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC90FD152B13D736008B2412 /* MKMarkerAnnotationViewRepresentable.swift */; };
 		DC90FD182B13D76C008B2412 /* OnMapTapGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC90FD172B13D76C008B2412 /* OnMapTapGesture.swift */; };
 		DC90FD1A2B13D78F008B2412 /* ObservableLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC90FD192B13D78F008B2412 /* ObservableLocationManager.swift */; };
-		DC90FD1C2B13D84D008B2412 /* MapIOS17.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC90FD1B2B13D84D008B2412 /* MapIOS17.swift */; };
 		DCD9621D2B0D758B00DC9761 /* MapSandboxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD9621C2B0D758B00DC9761 /* MapSandboxApp.swift */; };
 		DCD9621F2B0D758B00DC9761 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD9621E2B0D758B00DC9761 /* ContentView.swift */; };
 		DCD962212B0D758E00DC9761 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DCD962202B0D758E00DC9761 /* Assets.xcassets */; };
 		DCD962242B0D758E00DC9761 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DCD962232B0D758E00DC9761 /* Preview Assets.xcassets */; };
-		DCD9622B2B0D8F9C00DC9761 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD9622A2B0D8F9C00DC9761 /* File.swift */; };
-		DCD9622D2B0D91A300DC9761 /* Clusterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD9622C2B0D91A300DC9761 /* Clusterable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		27CDF1DE2B0E9D64006E57C1 /* Backwards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backwards.swift; sourceTree = "<group>"; };
+		27374DA12B20AA1200554FBF /* MapViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewRepresentable.swift; sourceTree = "<group>"; };
+		27573E602B1527EF00E34F47 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		DC90FD132B13D6E6008B2412 /* Place.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Place.swift; sourceTree = "<group>"; };
 		DC90FD152B13D736008B2412 /* MKMarkerAnnotationViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MKMarkerAnnotationViewRepresentable.swift; sourceTree = "<group>"; };
 		DC90FD172B13D76C008B2412 /* OnMapTapGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnMapTapGesture.swift; sourceTree = "<group>"; };
 		DC90FD192B13D78F008B2412 /* ObservableLocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableLocationManager.swift; sourceTree = "<group>"; };
-		DC90FD1B2B13D84D008B2412 /* MapIOS17.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapIOS17.swift; sourceTree = "<group>"; };
 		DCD962192B0D758B00DC9761 /* MapSandbox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapSandbox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCD9621C2B0D758B00DC9761 /* MapSandboxApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSandboxApp.swift; sourceTree = "<group>"; };
 		DCD9621E2B0D758B00DC9761 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DCD962202B0D758E00DC9761 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DCD962232B0D758E00DC9761 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		DCD9622A2B0D8F9C00DC9761 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
-		DCD9622C2B0D91A300DC9761 /* Clusterable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clusterable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,6 +42,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27573E662B160D5F00E34F47 /* MapClusterizer in Frameworks */,
+				27F2D2372B24AED100C8AFB5 /* swift-format in Frameworks */,
+				27573E632B15282100E34F47 /* MapClusterizer in Frameworks */,
+				27573E552B14E1B900E34F47 /* MapClusterizer in Frameworks */,
+				27573E522B14DD5C00E34F47 /* MapClusterizer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -67,16 +72,14 @@
 		DCD9621B2B0D758B00DC9761 /* MapSandbox */ = {
 			isa = PBXGroup;
 			children = (
+				27573E602B1527EF00E34F47 /* Info.plist */,
 				DCD9621C2B0D758B00DC9761 /* MapSandboxApp.swift */,
 				DCD9621E2B0D758B00DC9761 /* ContentView.swift */,
 				DC90FD192B13D78F008B2412 /* ObservableLocationManager.swift */,
 				DC90FD172B13D76C008B2412 /* OnMapTapGesture.swift */,
 				DC90FD152B13D736008B2412 /* MKMarkerAnnotationViewRepresentable.swift */,
+				27374DA12B20AA1200554FBF /* MapViewRepresentable.swift */,
 				DC90FD132B13D6E6008B2412 /* Place.swift */,
-				DC90FD1B2B13D84D008B2412 /* MapIOS17.swift */,
-				27CDF1DE2B0E9D64006E57C1 /* Backwards.swift */,
-				DCD9622C2B0D91A300DC9761 /* Clusterable.swift */,
-				DCD9622A2B0D8F9C00DC9761 /* File.swift */,
 				DCD962202B0D758E00DC9761 /* Assets.xcassets */,
 				DCD962222B0D758E00DC9761 /* Preview Content */,
 			);
@@ -107,6 +110,13 @@
 			dependencies = (
 			);
 			name = MapSandbox;
+			packageProductDependencies = (
+				27573E512B14DD5C00E34F47 /* MapClusterizer */,
+				27573E542B14E1B900E34F47 /* MapClusterizer */,
+				27573E622B15282100E34F47 /* MapClusterizer */,
+				27573E652B160D5F00E34F47 /* MapClusterizer */,
+				27F2D2362B24AED100C8AFB5 /* swift-format */,
+			);
 			productName = MapSandbox;
 			productReference = DCD962192B0D758B00DC9761 /* MapSandbox.app */;
 			productType = "com.apple.product-type.application";
@@ -135,6 +145,10 @@
 				Base,
 			);
 			mainGroup = DCD962102B0D758B00DC9761;
+			packageReferences = (
+				27573E642B160D5F00E34F47 /* XCLocalSwiftPackageReference "../../Desktop/swiftui-map-clusterizer" */,
+				27F2D2352B24AED100C8AFB5 /* XCRemoteSwiftPackageReference "swift-format" */,
+			);
 			productRefGroup = DCD9621A2B0D758B00DC9761 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -161,14 +175,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC90FD1C2B13D84D008B2412 /* MapIOS17.swift in Sources */,
 				DCD9621F2B0D758B00DC9761 /* ContentView.swift in Sources */,
 				DC90FD1A2B13D78F008B2412 /* ObservableLocationManager.swift in Sources */,
-				DCD9622B2B0D8F9C00DC9761 /* File.swift in Sources */,
-				DCD9622D2B0D91A300DC9761 /* Clusterable.swift in Sources */,
 				DC90FD142B13D6E6008B2412 /* Place.swift in Sources */,
+				27374DA22B20AA1200554FBF /* MapViewRepresentable.swift in Sources */,
 				DCD9621D2B0D758B00DC9761 /* MapSandboxApp.swift in Sources */,
-				27CDF1DF2B0E9D64006E57C1 /* Backwards.swift in Sources */,
 				DC90FD162B13D736008B2412 /* MKMarkerAnnotationViewRepresentable.swift in Sources */,
 				DC90FD182B13D76C008B2412 /* OnMapTapGesture.swift in Sources */,
 			);
@@ -307,6 +318,7 @@
 				DEVELOPMENT_TEAM = 2CU37X4Q76;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MapSandbox/Info.plist;
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Please ";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Please ";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -339,6 +351,7 @@
 				DEVELOPMENT_TEAM = 2CU37X4Q76;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MapSandbox/Info.plist;
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Please ";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Please ";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -382,6 +395,48 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		27573E642B160D5F00E34F47 /* XCLocalSwiftPackageReference "../../Desktop/swiftui-map-clusterizer" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../Desktop/swiftui-map-clusterizer";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		27F2D2352B24AED100C8AFB5 /* XCRemoteSwiftPackageReference "swift-format" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-format";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 509.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		27573E512B14DD5C00E34F47 /* MapClusterizer */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MapClusterizer;
+		};
+		27573E542B14E1B900E34F47 /* MapClusterizer */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MapClusterizer;
+		};
+		27573E622B15282100E34F47 /* MapClusterizer */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MapClusterizer;
+		};
+		27573E652B160D5F00E34F47 /* MapClusterizer */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MapClusterizer;
+		};
+		27F2D2362B24AED100C8AFB5 /* swift-format */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 27F2D2352B24AED100C8AFB5 /* XCRemoteSwiftPackageReference "swift-format" */;
+			productName = "swift-format";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DCD962112B0D758B00DC9761 /* Project object */;
 }
